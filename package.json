@@ -1,0 +1,12 @@
+{
+  "name": "aura-dev",
+  "private": true,
+  "scripts": {
+    "seed": "node scripts/seed-users.js",
+    "verify": "node verify-deployment.js",
+    "test:deploy": "npm run verify"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2"
+  }
+}

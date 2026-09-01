@@ -1,0 +1,15 @@
+[build]
+  publish = "."
+  # No build command needed - static site
+
+# Environment variables setup (set via Netlify dashboard)
+[build.environment]
+  # These should be set in Netlify dashboard > Site settings > Build & deploy > Environment
+  # SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
+  # SUPABASE_ANON_KEY = "YOUR-ANON-KEY"
+
+# Redirect rules
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

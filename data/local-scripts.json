@@ -1,0 +1,29 @@
+[
+  {
+    "id": "local-1",
+    "title": "Infinite Yield Admin",
+    "game": "Universal",
+    "language": "Luau",
+    "description": "Admin command script, works on most games.",
+    "code": "loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()",
+    "createdAt": "2026-01-10T00:00:00Z"
+  },
+  {
+    "id": "local-2",
+    "title": "Simple ESP",
+    "game": "Universal",
+    "language": "Luau",
+    "description": "Basic player ESP boxes.",
+    "code": "for _,p in pairs(game.Players:GetPlayers()) do\n  if p ~= game.Players.LocalPlayer then\n    local box = Instance.new('BoxHandleAdornment')\n    box.Adornee = p.Character and p.Character:FindFirstChild('HumanoidRootPart')\n    box.Size = Vector3.new(4,6,4)\n    box.AlwaysOnTop = true\n    box.Transparency = 0.5\n    box.Parent = workspace\n  end\nend",
+    "createdAt": "2026-01-12T00:00:00Z"
+  },
+  {
+    "id": "local-3",
+    "title": "Auto Farm Template",
+    "game": "Universal",
+    "language": "Lua",
+    "description": "Barebones auto-farm loop template, edit the tween target per game.",
+    "code": "while task.wait(1) do\n  -- TODO: tween to farm spot, fire remote\nend",
+    "createdAt": "2026-01-14T00:00:00Z"
+  }
+]
