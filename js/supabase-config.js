@@ -23,9 +23,9 @@ if (SUPABASE_URL.includes("YOUR-PROJECT") || SUPABASE_ANON_KEY.includes("YOUR-AN
 
 // Initialize Supabase client
 // Pastikan Supabase library sudah diload di HTML sebelum script ini
-let supabase;
-if (typeof window.supabase !== 'undefined') {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
+  // CDN already loaded Supabase, override the default export with our instance
+  window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } else {
-  console.error("❌ Supabase library tidak ditemukan. Pastikan sudah di-include di HTML");
+  console.error("❌ Supabase library tidak ditemukan. Pastikan @supabase/supabase-js@2 sudah di-include di HTML");
 }

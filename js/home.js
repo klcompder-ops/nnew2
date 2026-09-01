@@ -6,7 +6,7 @@ async function loadLocal() {
 }
 
 async function loadUploads() {
-  const { data } = await supabase.from("uploads").select("*").order("created_at", { ascending: false });
+  const { data } = await window.supabase.from("uploads").select("*").order("created_at", { ascending: false });
   return (data || []).map(u => ({ ...u, source: "upload" }));
 }
 
@@ -17,7 +17,7 @@ function setStatus(msg) {
 async function attachScores(items) {
   const ids = items.map(i => i.id);
   if (!ids.length) return items;
-  const { data } = await supabase.from("likes").select("script_id, value").in("script_id", ids);
+  const { data } = await window.supabase.from("likes").select("script_id, value").in("script_id", ids);
   const score = {}, total = {};
   (data || []).forEach(r => {
     score[r.script_id] = (score[r.script_id] || 0) + r.value;

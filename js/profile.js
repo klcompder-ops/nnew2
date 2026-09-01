@@ -21,7 +21,7 @@ function loginRegisterForm() {
   document.getElementById("login-form").onsubmit = async (e) => {
     e.preventDefault();
     const f = e.target;
-    const { error } = await supabase.auth.signInWithPassword({ email: f.email.value, password: f.password.value });
+    const { error } = await window.supabase.auth.signInWithPassword({ email: f.email.value, password: f.password.value });
     if (error) document.getElementById("auth-status").textContent = "Gagal login: " + error.message;
     else location.reload();
   };
@@ -29,11 +29,11 @@ function loginRegisterForm() {
   document.getElementById("register-form").onsubmit = async (e) => {
     e.preventDefault();
     const f = e.target;
-    const { data, error } = await supabase.auth.signUp({ email: f.email.value, password: f.password.value });
+    const { data, error } = await window.supabase.auth.signUp({ email: f.email.value, password: f.password.value });
     if (error) { document.getElementById("auth-status").textContent = "Gagal daftar: " + error.message; return; }
 
     if (data.session) {
-      await supabase.from("profiles").insert({ id: data.user.id, username: f.username.value });
+      await window.supabase.from("profiles").insert({ id: data.user.id, username: f.username.value });
       location.reload();
     } else {
       document.getElementById("auth-status").textContent = "Cek email untuk konfirmasi, lalu login.";
@@ -42,7 +42,7 @@ function loginRegisterForm() {
 }
 
 async function profileView(user) {
-  const { data: uploads } = await supabase.from("uploads").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+  const { data: uploads } = await window.supabase.from("uploads").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
   document.getElementById("profile-slot").innerHTML = `
     <h1>${user.username}</h1>
     <p class="notice">${user.email}</p>

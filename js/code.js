@@ -10,7 +10,7 @@ async function loadScript() {
     const list = await (await fetch("data/local-scripts.json")).json();
     item = list.find(s => s.id === id);
   } else if (src === "upload") {
-    const { data } = await supabase.from("uploads").select("*").eq("id", id).single();
+    const { data } = await window.supabase.from("uploads").select("*").eq("id", id).single();
     item = data;
   }
 
@@ -40,26 +40,26 @@ function renderOwnerActions() {
     if (title === null) return;
     const code = prompt("Kode:", currentItem.code);
     if (code === null) return;
-    await supabase.from("uploads").update({ title, code }).eq("id", id);
+    await window.supabase.from("uploads").update({ title, code }).eq("id", id);
     loadScript();
   };
 
   document.getElementById("delete-btn").onclick = async () => {
     if (!confirm("Hapus kode ini?")) return;
-    await supabase.from("uploads").delete().eq("id", id);
+    await window.supabase.from("uploads").delete().eq("id", id);
     location.href = "index.html";
   };
 }
 
 async function loadVotes() {
-  const { data } = await supabase.from("likes").select("value").eq("script_source", src).eq("script_id", id);
+  const { data } = await window.supabase.from("likes").select("value").eq("script_source", src).eq("script_id", id);
   const likes = (data || []).filter(r => r.value === 1).length;
   const dislikes = (data || []).filter(r => r.value === -1).length;
   document.getElementById("like-count").textContent = likes;
   document.getElementById("dislike-count").textContent = dislikes;
 
   if (currentUser) {
-    const { data: mine } = await supabase.from("likes").select("value")
+    const { data: mine } = await window.supabase.from("likes").select("value")
       .eq("script_source", src).eq("script_id", id).eq("user_id", currentUser.id).maybeSingle();
     document.getElementById("like-btn").classList.toggle("liked", mine?.value === 1);
     document.getElementById("dislike-btn").classList.toggle("disliked", mine?.value === -1);
@@ -68,7 +68,7 @@ async function loadVotes() {
 
 async function vote(value) {
   if (!currentUser) { alert("Login dulu untuk vote."); location.href = "profile.html"; return; }
-  await supabase.from("likes").upsert(
+  await window.supabase.from("likes").upsert(
     { script_source: src, script_id: id, user_id: currentUser.id, value },
     { onConflict: "script_source,script_id,user_id" }
   );
@@ -76,7 +76,7 @@ async function vote(value) {
 }
 
 async function loadComments() {
-  const { data } = await supabase.from("comments").select("*, profiles(username)")
+  const { data } = await window.supabase.from("comments").select("*, profiles(username)")
     .eq("script_source", src).eq("script_id", id).order("created_at");
 
   document.getElementById("comments").innerHTML = (data || []).map(c => {
@@ -92,13 +92,13 @@ async function loadComments() {
   }).join("") || `<p class="notice">Belum ada komentar.</p>`;
 
   document.querySelectorAll(".delete-comment").forEach(b => b.onclick = async () => {
-    await supabase.from("comments").delete().eq("id", b.dataset.id);
+    await window.supabase.from("comments").delete().eq("id", b.dataset.id);
     loadComments();
   });
   document.querySelectorAll(".edit-comment").forEach(b => b.onclick = async () => {
     const content = prompt("Edit komentar:", decodeURIComponent(b.dataset.content));
     if (content === null) return;
-    await supabase.from("comments").update({ content }).eq("id", b.dataset.id);
+    await window.supabase.from("comments").update({ content }).eq("id", b.dataset.id);
     loadComments();
   });
 }
@@ -117,7 +117,7 @@ function renderCommentForm() {
     e.preventDefault();
     const content = e.target.content.value.trim();
     if (!content) return;
-    await supabase.from("comments").insert({ script_source: src, script_id: id, user_id: currentUser.id, content });
+    await window.supabase.from("comments").insert({ script_source: src, script_id: id, user_id: currentUser.id, content });
     e.target.content.value = "";
     loadComments();
   };

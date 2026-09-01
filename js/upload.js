@@ -25,7 +25,7 @@
   document.getElementById("upload-form").onsubmit = async (e) => {
     e.preventDefault();
     const f = e.target;
-    const { data, error } = await supabase.from("uploads").insert({
+    const { data, error } = await window.supabase.from("uploads").insert({
       user_id: user.id,
       title: f.title.value,
       game: f.game.value,

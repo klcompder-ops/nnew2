@@ -1,9 +1,9 @@
 // Shared across all pages: current user + navbar.
 
 async function getCurrentUser() {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await window.supabase.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+  const { data: profile } = await window.supabase.from("profiles").select("*").eq("id", user.id).single();
   return { ...user, username: profile?.username || "Guest", is_admin: !!profile?.is_admin };
 }
 
@@ -14,7 +14,7 @@ async function renderNavbar() {
   if (user) {
     slot.innerHTML = `<a href="profile.html">${user.username}${user.is_admin ? " (admin)" : ""}</a> <button id="logout-btn">Logout</button>`;
     document.getElementById("logout-btn").onclick = async () => {
-      await supabase.auth.signOut();
+      await window.supabase.auth.signOut();
       location.reload();
     };
   } else {
