@@ -76,31 +76,48 @@ async function vote(value) {
 }
 
 async function loadComments() {
-  const { data } = await window.supabase.from("comments").select("*, profiles(username)")
-    .eq("script_source", src).eq("script_id", id).order("created_at");
+  try {
+    const { data, error } = await window.supabase.from("comments").select("*, profiles(username)")
+      .eq("script_source", src).eq("script_id", id).order("created_at", { ascending: false });
+    
+    if (error) {
+      console.error("❌ Error loading comments:", error);
+      document.getElementById("comments").innerHTML = `<p class="notice">Gagal muat komentar: ${error.message}</p>`;
+      return;
+    }
 
-  document.getElementById("comments").innerHTML = (data || []).map(c => {
-    const canManage = currentUser && (currentUser.id === c.user_id || currentUser.is_admin);
-    return `
-      <div class="comment">
-        <div class="author">${c.profiles?.username || "Guest"}</div>
-        <div>${(c.content || "").replace(/</g, "&lt;")}</div>
-        ${canManage ? `<button class="edit-comment" data-id="${c.id}" data-content="${encodeURIComponent(c.content)}">Edit</button>
-          <button class="delete-comment" data-id="${c.id}">Hapus</button>` : ""}
-      </div>
-    `;
-  }).join("") || `<p class="notice">Belum ada komentar.</p>`;
+    if (!data || data.length === 0) {
+      document.getElementById("comments").innerHTML = `<p class="notice">Belum ada komentar.</p>`;
+      return;
+    }
 
-  document.querySelectorAll(".delete-comment").forEach(b => b.onclick = async () => {
-    await window.supabase.from("comments").delete().eq("id", b.dataset.id);
-    loadComments();
-  });
-  document.querySelectorAll(".edit-comment").forEach(b => b.onclick = async () => {
-    const content = prompt("Edit komentar:", decodeURIComponent(b.dataset.content));
-    if (content === null) return;
-    await window.supabase.from("comments").update({ content }).eq("id", b.dataset.id);
-    loadComments();
-  });
+    document.getElementById("comments").innerHTML = data.map(c => {
+      const canManage = currentUser && (currentUser.id === c.user_id || currentUser.is_admin);
+      const username = c.profiles?.username || c.user_id || "Guest";
+      return `
+        <div class="comment">
+          <div class="author">${username}</div>
+          <div>${(c.content || "").replace(/</g, "&lt;")}</div>
+          ${canManage ? `<button class="edit-comment" data-id="${c.id}" data-content="${encodeURIComponent(c.content)}">Edit</button>
+            <button class="delete-comment" data-id="${c.id}">Hapus</button>` : ""}
+        </div>
+      `;
+    }).join("");
+
+    document.querySelectorAll(".delete-comment").forEach(b => b.onclick = async () => {
+      await window.supabase.from("comments").delete().eq("id", b.dataset.id);
+      loadComments();
+    });
+    document.querySelectorAll(".edit-comment").forEach(b => b.onclick = async () => {
+      const content = prompt("Edit komentar:", decodeURIComponent(b.dataset.content));
+      if (content === null) return;
+      await window.supabase.from("comments").update({ content }).eq("id", b.dataset.id);
+      loadComments();
+    });
+  } catch (e) {
+    console.error("❌ Comments error:", e);
+    document.getElementById("comments").innerHTML = `<p class="notice">Error: ${e.message}</p>`;
+  }
 }
 
 function renderCommentForm() {
@@ -115,11 +132,30 @@ function renderCommentForm() {
   </form>`;
   document.getElementById("comment-form").onsubmit = async (e) => {
     e.preventDefault();
-    const content = e.target.content.value.trim();
+    const f = e.target;
+    const content = f.content.value.trim();
     if (!content) return;
-    await window.supabase.from("comments").insert({ script_source: src, script_id: id, user_id: currentUser.id, content });
-    e.target.content.value = "";
-    loadComments();
+    
+    try {
+      const { error } = await window.supabase.from("comments").insert({ 
+        script_source: src, 
+        script_id: id, 
+        user_id: currentUser.id, 
+        content 
+      });
+      
+      if (error) {
+        alert("❌ Gagal post komentar: " + error.message);
+        console.error("Insert comment error:", error);
+        return;
+      }
+      
+      f.content.value = "";
+      await loadComments();
+    } catch (e) {
+      alert("❌ Error: " + e.message);
+      console.error("Comment submit error:", e);
+    }
   };
 }
 
