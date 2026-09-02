@@ -35,10 +35,35 @@ a { color: var(--blue-light); text-decoration: none; }
   font-size: 20px;
   color: #fff;
 }
-.navbar .logo img { height: 28px; }
+.navbar .logo img { height: 28px; width: auto; }
 .navbar nav { display: flex; gap: 18px; align-items: center; }
 
+/* Mobile Navigation */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+  .navbar .logo {
+    font-size: 18px;
+  }
+  .navbar nav { gap: 12px; font-size: 14px; }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .navbar nav { width: 100%; justify-content: space-around; }
+}
+
 .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+/* Mobile Container */
+@media (max-width: 768px) {
+  .container { padding: 16px; }
+}
 
 .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
 .toolbar input, .toolbar select {
@@ -60,6 +85,20 @@ a { color: var(--blue-light); text-decoration: none; }
 .toolbar button.active { background: var(--blue-light); }
 button:hover { opacity: 0.9; }
 
+/* Mobile Toolbar */
+@media (max-width: 768px) {
+  .toolbar { gap: 8px; }
+  .toolbar input { min-width: 140px; padding: 6px 10px; font-size: 14px; }
+  .toolbar button { padding: 6px 10px; font-size: 13px; }
+  .toolbar select { padding: 6px 8px; font-size: 13px; }
+}
+
+@media (max-width: 480px) {
+  .toolbar { flex-direction: column; }
+  .toolbar input, .toolbar select { width: 100%; }
+  .toolbar button { width: 100%; }
+}
+
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
 .card {
   background: var(--bg-card);
@@ -72,6 +111,17 @@ button:hover { opacity: 0.9; }
 .card h3 { margin: 0 0 6px; font-size: 16px; }
 .card .meta { color: var(--text-dim); font-size: 13px; }
 .tag { display: inline-block; background: #1e2b4a; color: var(--blue-light); font-size: 12px; padding: 2px 8px; border-radius: 999px; margin-top: 6px; }
+
+/* Mobile Grid */
+@media (max-width: 768px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .card { padding: 10px; }
+  .card h3 { font-size: 14px; }
+}
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr; gap: 10px; }
+}
 
 pre {
   background: #060b16;
@@ -100,3 +150,10 @@ form.stack input, form.stack select, form.stack textarea {
   font-family: inherit;
 }
 .notice { color: var(--text-dim); font-size: 14px; }
+
+/* Mobile Form */
+@media (max-width: 768px) {
+  form.stack { max-width: 100%; }
+  form.stack input, form.stack textarea { font-size: 16px; }
+  .grid-form { grid-template-columns: 1fr; }
+}
